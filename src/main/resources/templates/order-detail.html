@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|#{orders.number} #{order.id}|">Заказ — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <a href="/orders" th:text="#{orders.title}">Мои заказы</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="|#{orders.number} #{order.id}|">Заказ</span>
+    </nav>
+    <a href="/orders" class="btn mb-1" th:text="#{orders.back}">← Мои заказы</a>
+
+    <div class="product-detail">
+        <div class="info">
+            <h1 th:text="|#{orders.number} #{order.id}|">Заказ №<span th:text="${order.id}"></span></h1>
+            <p th:text="|#{orders.status}: #{order.status}|">Статус: <strong th:text="${order.status}"></strong></p>
+            <p th:text="|Оплата: #{order.paymentStatus}|">Оплата: <span th:text="${order.paymentStatus}"></span></p>
+            <p th:if="${order.paymentStatus == 'pending' and order.confirmationUrl != null}">
+                <a th:href="${order.confirmationUrl}" class="btn" th:text="#{orders.pay}">Оплатить</a>
+            </p>
+            <p th:text="${order.createdAt}">Дата</p>
+            <h3 class="mt-1-5" th:text="#{orders.items}">Состав заказа</h3>
+            <table class="mt-1">
+                <thead>
+                    <tr>
+                        <th th:text="#{cart.product}">Товар</th>
+                        <th th:text="#{cart.price}">Цена</th>
+                        <th th:text="#{cart.quantity}">Кол-во</th>
+                        <th th:text="#{cart.total}">Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <td th:text="${item.product.name}">Товар</td>
+                        <td class="text-center" th:text="|${item.price} ₽|">Цена</td>
+                        <td class="text-center" th:text="${item.quantity}">1</td>
+                        <td class="text-center" th:text="|${item.price * item.quantity} ₽|">Сумма</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right" th:text="#{cart.summary} + ':'">Итого:</td>
+                        <td class="text-center" th:text="|${order.totalAmount} ₽|"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

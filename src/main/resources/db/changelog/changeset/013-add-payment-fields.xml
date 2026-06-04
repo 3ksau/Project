@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="013-add-payment-fields" author="opencode">
+        <addColumn tableName="orders">
+            <column name="payment_id" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="orders">
+            <column name="payment_status" type="varchar(20)" defaultValue="pending"/>
+        </addColumn>
+        <addColumn tableName="orders">
+            <column name="confirmation_url" type="varchar(512)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

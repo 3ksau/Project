@@ -1,0 +1,13 @@
+target/
+*.jar
+*.log
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+.mvn/
+mvnw
+mvnw.cmd
+node_modules/
+uploads/

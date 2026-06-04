@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{cart.title}">Корзина — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="#{cart.title}">Корзина</span>
+    </nav>
+    <h1 class="page-title" th:text="#{cart.title}">Корзина</h1>
+
+    <div th:if="${#lists.isEmpty(items)}" class="empty-state">
+        <p th:text="#{cart.empty}">Корзина пуста.</p>
+        <a href="/catalog" class="btn" th:text="#{catalog.title}">Перейти в каталог</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(items)}">
+        <table>
+            <thead>
+                <tr>
+                    <th th:text="#{cart.product}">Товар</th>
+                    <th th:text="#{cart.price}">Цена</th>
+                    <th th:text="#{cart.quantity}">Кол-во</th>
+                    <th th:text="#{cart.total}">Сумма</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.product.name}">Товар</td>
+                    <td class="text-center" th:text="|${item.price} ₽|">Цена</td>
+                    <td class="text-center">
+                        <form method="post" th:action="@{/cart/update/{id}(id=${item.id})}" class="quantity-form">
+                            <button type="submit" name="quantity" th:value="${item.quantity - 1}" class="qty-btn">−</button>
+                            <span class="qty-value" th:text="${item.quantity}">1</span>
+                            <button type="submit" name="quantity" th:value="${item.quantity + 1}" class="qty-btn">+</button>
+                        </form>
+                    </td>
+                    <td class="text-center" th:text="|${#numbers.formatDecimal(item.price * item.quantity, 1, 2)} ₽|">Сумма</td>
+                    <td class="text-center">
+                        <form method="post" th:action="@{/cart/remove/{id}(id=${item.id})}" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-wishlist" th:text="#{cart.remove}">✕</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" th:text="#{cart.summary} + ':'">Итого:</td>
+                    <td class="text-center" th:text="|${total} ₽|"></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <a href="/checkout" class="btn btn-lg" style="margin-top: 1.5rem; display: inline-block;" th:text="#{cart.checkout}">Оформить заказ</a>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{admin.products}">Админ — Товары</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <h1 class="page-title" th:text="#{admin.product.manage}">Управление товарами</h1>
+    <a href="/admin/products/new" class="btn mb-1" th:text="#{admin.product.new}">+ Новый товар</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th th:text="#{cart.product}">Название</th>
+                <th th:text="#{cart.price}">Цена</th>
+                <th th:text="#{catalog.filter.category}">Категория</th>
+                <th th:text="#{admin.actions}">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p : ${products}">
+                <td class="text-center" th:text="${p.id}">1</td>
+                <td th:text="${p.name}">Товар</td>
+                <td class="text-center" th:text="|${p.price} ₽|">1000</td>
+                <td class="text-center" th:text="${p.categoryName}">Категория</td>
+                <td class="text-center">
+                    <a th:href="@{/admin/products/{id}/edit(id=${p.id})}" class="btn btn-sm" th:text="#{admin.edit}">Ред.</a>
+                    <form method="post" th:action="@{/admin/products/{id}/delete(id=${p.id})}" class="inline-form" onsubmit="return confirm('Удалить?')">
+                        <button type="submit" class="btn btn-sm btn-wishlist" th:text="#{admin.delete}">Уд.</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

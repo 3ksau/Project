@@ -1,51 +1,70 @@
 package com.example.Shop.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@Table(name = "products")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double price;
-    private Integer quantity;
+    @Column(nullable = false, length = 150)
+    private String name;       // Название товара
 
-    public Long getId() {
-        return id;
-    }
+    @Column(length = 2000)
+    private String description;        // Подробное описание
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;           // Цена
 
-    public Double getPrice() {
-        return price;
-    }
+    @Column(nullable = false)
+    private Integer stockQuantity;       // Кол-во на складе
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+   private String imageUrl;           // Ссылка на фото
 
-    public Integer getQuantity() {
-        return quantity;
-    }
+    @Column(length = 100)
+    private String brand;        // Бренд
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
+    @Column(length = 50)
+    private String article;      // Артикул
 
-    public Product() {
+    @Column(length = 50)
+    private String material;     // Материал (латунь, нерж., хром, пластик)
 
-    }
+    @Column(length = 50)
+    private String color;        // Цвет/покрытие (хром, белый, матовый чёрный)
 
-    public Product(Long id, Double price, Integer quantity) {
-        this.id = id;
-        this.price = price;
-        this.quantity = quantity;
-    }
+    @Column(precision = 8, scale = 2)
+    private java.math.BigDecimal weight; // Вес (кг)
+
+    @Column(length = 30)
+    private String warranty;     // Гарантия (напр. "5 лет")
+
+    private Boolean available;   // В наличии / под заказ
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

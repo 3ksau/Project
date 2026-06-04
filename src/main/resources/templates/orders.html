@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{orders.title}">Мои заказы — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="#{orders.title}">Мои заказы</span>
+    </nav>
+    <h1 class="page-title" th:text="#{orders.title}">Мои заказы</h1>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+        <p th:text="#{orders.empty}">У вас ещё нет заказов.</p>
+        <a href="/catalog" class="btn">Перейти в каталог</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(orders)}">
+        <div class="product-grid">
+            <div class="category-card" th:each="order : ${orders}">
+                <h3 th:text="|#{orders.number} #{order.id}|">Заказ №<span th:text="${order.id}"></span></h3>
+                <p th:text="|#{orders.status}: #{order.status}|">Статус: <strong th:text="${order.status}"></strong></p>
+                <p th:if="${order.paymentStatus == 'pending' and order.confirmationUrl != null}" class="mt-0-5">
+                    <a th:href="${order.confirmationUrl}" class="btn btn-sm" th:text="#{orders.pay}">Оплатить</a>
+                </p>
+                <p th:text="|#{orders.total}: #{order.totalAmount} ₽|">Сумма: <strong th:text="|${order.totalAmount} ₽|"></strong></p>
+                <p th:text="${order.createdAt}">Дата</p>
+                <a th:href="@{/orders/{id}(id=${order.id})}" class="btn" th:text="#{orders.detail}">Подробнее</a>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

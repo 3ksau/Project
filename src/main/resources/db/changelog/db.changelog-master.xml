@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <include file="db/changelog/changeset/001-create-tables.xml"/>
+    <include file="db/changelog/changeset/011-add-product-attributes.xml"/>
+    <include file="db/changelog/changeset/012-add-review-image.xml"/>
+    <include file="db/changelog/changeset/013-add-payment-fields.xml"/>
+    <include file="db/changelog/changeset/014-add-user-address.xml"/>
+    <include file="db/changelog/changeset/015-add-favorite-brands.xml"/>
+
+</databaseChangeLog>

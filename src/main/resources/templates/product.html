@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.name} + ' — Магазин сантехники'">Товар</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <a href="/catalog" th:text="#{nav.catalog}">Каталог</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="${product.name}">Товар</span>
+    </nav>
+    <a href="/catalog" class="btn mb-1" th:text="#{product.back.to.catalog}">← Назад</a>
+
+    <div class="product-detail">
+        <div th:if="${product.imageUrl}" class="product-detail-image">
+            <img th:src="${product.imageUrl}" th:alt="${product.name}"/>
+        </div>
+        <div class="info">
+            <h1 th:text="${product.name}">Название</h1>
+            <div class="price" th:text="|${product.price} ₽|">Цена</div>
+            <div class="meta" th:if="${product.brand}" th:text="|#{catalog.filter.brand}: ${product.brand}|">Бренд: <span th:text="${product.brand}"></span></div>
+            <div class="meta" th:if="${product.article}">Артикул: <span th:text="${product.article}"></span></div>
+            <div class="meta" th:if="${product.categoryName}" th:text="|#{catalog.filter.category}: ${product.categoryName}|">Категория: <span th:text="${product.categoryName}"></span></div>
+            <div class="meta" th:if="${product.material}">Материал: <span th:text="${product.material}"></span></div>
+            <div class="meta" th:if="${product.color}">Цвет: <span th:text="${product.color}"></span></div>
+            <div class="meta" th:if="${product.weight}">Вес: <span th:text="|${product.weight} кг|"></span></div>
+            <div class="meta" th:if="${product.warranty}">Гарантия: <span th:text="${product.warranty}"></span></div>
+
+            <div class="meta" th:if="${product.reviewCount > 0}">
+                <span th:text="|#{product.reviews.rating}:|"></span>
+                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                    <span th:style="${i <= product.averageRating ? 'color:gold;' : 'color:#ddd;'}" th:text="★"></span>
+                </span>
+                (<span th:text="${product.averageRating}"></span>, <span th:text="${product.reviewCount}"></span>)
+            </div>
+            <div class="meta" th:unless="${product.reviewCount > 0}">
+                <span th:text="#{product.reviews.empty}">Нет отзывов</span>
+            </div>
+
+            <span class="stock" th:classappend="${product.stockQuantity > 0 ? '' : 'out-of-stock'}"
+                  th:text="${product.stockQuantity > 0} ? #{product.in.stock} : #{product.out.of.stock}">
+            </span>
+            <p th:if="${product.description}" class="mt-1" th:text="${product.description}">Описание</p>
+            <form sec:authorize="isAuthenticated()" method="post" th:action="@{/cart/add}" class="inline-block mt-1-5">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                <button type="submit" class="btn ml-0-5" th:text="#{product.add.to.cart}">В корзину</button>
+            </form>
+            <form sec:authorize="isAuthenticated()" method="post" th:action="@{/wishlist/toggle/{id}(id=${product.id})}" class="inline-block mt-1-5 ml-0-5">
+                <button type="submit" class="btn btn-wishlist">♥ <span th:text="#{nav.wishlist}">В избранное</span></button>
+            </form>
+            <p sec:authorize="!isAuthenticated()" class="mt-1">
+                <a href="/login" th:text="#{nav.login}">Войдите</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <h2 th:text="|#{product.reviews} (${product.reviewCount})|">Отзывы (0)</h2>
+
+        <div sec:authorize="isAuthenticated()" class="review-form-card">
+            <h3 th:text="#{product.reviews.leave}">Оставить отзыв</h3>
+            <form method="post" enctype="multipart/form-data" th:action="@{/product/{id}/review(id=${product.id})}">
+                <div class="form-group">
+                    <label th:text="#{product.reviews.rating} + ':'">Оценка:
+                        <select name="rating">
+                            <option value="5">5 ★</option>
+                            <option value="4">4 ★</option>
+                            <option value="3">3 ★</option>
+                            <option value="2">2 ★</option>
+                            <option value="1">1 ★</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <textarea name="comment" rows="3" th:placeholder="#{product.reviews.your.review}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label th:text="#{product.reviews.photo}">Фото:</label>
+                    <input type="file" name="image" accept="image/*" class="form-control">
+                </div>
+                <button type="submit" class="btn" th:text="#{product.reviews.submit}">Отправить</button>
+            </form>
+        </div>
+        <p sec:authorize="!isAuthenticated()">
+            <a href="/login" th:text="#{nav.login}">Войдите</a>
+        </p>
+
+        <div th:if="${#lists.isEmpty(reviews)}" class="text-muted" th:text="#{product.reviews.empty}">
+            Пока нет отзывов. Будьте первым!
+        </div>
+        <div th:each="rev : ${reviews}" class="review-card">
+            <div class="review-header">
+                <strong th:text="${rev.user.fullName} != null ? ${rev.user.fullName} : ${rev.user.email}">Имя</strong>
+                <span>
+                    <span th:each="i : ${#numbers.sequence(1, 5)}">
+                        <span th:classappend="${i <= rev.rating} ? 'star' : 'star-empty'" th:text="★"></span>
+                    </span>
+                </span>
+            </div>
+            <div class="review-date" th:text="${#temporals.format(rev.createdAt, 'dd.MM.yyyy HH:mm')}">дата</div>
+            <div th:if="${rev.imageUrl}" class="review-image">
+                <img th:src="${rev.imageUrl}" th:alt="#{product.reviews.photo}"/>
+            </div>
+            <p th:if="${rev.comment}" class="mt-0-5" th:text="${rev.comment}">комментарий</p>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

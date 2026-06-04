@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{admin.orders}">Админ — Заказы</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <h1 class="page-title" th:text="#{admin.order.manage}">Управление заказами</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>№</th>
+                <th th:text="#{admin.order.user}">Пользователь</th>
+                <th th:text="#{orders.total}">Сумма</th>
+                <th th:text="#{orders.status}">Статус</th>
+                <th th:text="#{orders.date}">Дата</th>
+                <th th:text="#{admin.actions}">Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td class="text-center" th:text="${order.id}">1</td>
+                <td th:text="${order.user.email}">email</td>
+                <td class="text-center" th:text="|${order.totalAmount} ₽|">1000</td>
+                <td class="text-center" th:text="${order.status}">NEW</td>
+                <td class="text-center" th:text="${order.createdAt}">date</td>
+                <td class="text-center">
+                    <form method="post" th:action="@{/admin/orders/{id}/status(id=${order.id})}" class="inline-form">
+                        <select name="status" class="form-select-sm">
+                            <option th:each="s : ${statuses}" th:text="${s}" th:selected="${s == order.status}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-sm" th:text="#{admin.order.change}">Изменить</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

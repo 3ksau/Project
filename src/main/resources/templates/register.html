@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{register.title}">Регистрация — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="#{register.title}">Регистрация</span>
+    </nav>
+    <div class="auth-form">
+        <h2 th:text="#{register.title}">Регистрация</h2>
+        <div class="error" th:if="${error}" th:text="${error}"></div>
+        <form method="post" th:action="@{/register}">
+            <input type="text" name="fullName" th:placeholder="#{register.name}">
+            <input type="email" name="email" th:placeholder="#{login.email}" required>
+            <input type="tel" name="phone" placeholder="Telephone">
+            <input type="password" name="password" th:placeholder="#{register.password.placeholder}" required minlength="6">
+            <button type="submit" class="btn" th:text="#{register.btn}">Зарегистрироваться</button>
+        </form>
+        <p><a href="/login" th:text="#{register.login.link}">Уже есть аккаунт? Войти</a></p>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

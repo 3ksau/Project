@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{catalog.title}">Каталог — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<div class="container catalog-layout">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="#{catalog.title}">Каталог</span>
+    </nav>
+
+    <!-- Sidebar with filters -->
+    <aside class="filter-sidebar">
+        <h3 th:text="#{catalog.filters}">Фильтры</h3>
+        <form method="get" action="/catalog" id="filterForm">
+
+            <input type="hidden" name="q" th:value="${query}"/>
+            <input type="hidden" name="sort" th:value="${sort}"/>
+            <input type="hidden" name="dir" th:value="${dir}"/>
+            <input type="hidden" name="material" th:value="${selectedMaterial}"/>
+            <input type="hidden" name="color" th:value="${selectedColor}"/>
+
+            <div class="filter-group">
+                <label th:text="#{catalog.filter.category}">Категория</label>
+                <select name="categoryId" onchange="this.form.submit()">
+                    <option value="" th:text="#{catalog.filter.category.all}">Все категории</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}"
+                            th:text="${c.name}"
+                            th:selected="${selectedCategoryId != null && selectedCategoryId == c.id}"></option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label th:text="#{catalog.filter.price}">Цена</label>
+                <div class="price-range">
+                    <input type="number" name="priceMin" th:value="${priceMin}" th:placeholder="#{catalog.filter.price.from}" step="0.01" min="0"/>
+                    <input type="number" name="priceMax" th:value="${priceMax}" th:placeholder="#{catalog.filter.price.to}" step="0.01" min="0"/>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label th:text="#{catalog.filter.brand}">Бренд</label>
+                <select name="brand" onchange="this.form.submit()">
+                    <option value="" th:text="#{catalog.filter.brand.all}">Все бренды</option>
+                    <option th:each="b : ${brands}" th:value="${b}"
+                            th:text="${b}"
+                            th:selected="${selectedBrand != null && selectedBrand == b}"></option>
+                </select>
+            </div>
+
+            <div sec:authorize="isAuthenticated()" class="filter-group" th:if="${brands.size() > 0}">
+                <label>⭐ Избранные бренды</label>
+                <div class="favorite-brands-list">
+                    <div th:each="b : ${brands}" class="favorite-brand-row">
+                        <span th:text="${b}">Бренд</span>
+                        <form method="post" th:action="@{/favorite-brands/toggle(brand=${b})}" style="display:inline">
+                            <button type="submit" class="btn-fav-star"
+                                    th:classappend="${favoriteBrands != null && favoriteBrands.contains(b)} ? 'active' : ''">
+                                <span th:if="${favoriteBrands != null && favoriteBrands.contains(b)}">★</span>
+                                <span th:unless="${favoriteBrands != null && favoriteBrands.contains(b)}">☆</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Материал</label>
+                <select name="material" onchange="this.form.submit()">
+                    <option value="" th:text="#{catalog.filter.brand.all}">Все материалы</option>
+                    <option th:each="m : ${materials}" th:value="${m}" th:text="${m}" th:selected="${selectedMaterial != null && selectedMaterial == m}"></option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Цвет</label>
+                <select name="color" onchange="this.form.submit()">
+                    <option value="" th:text="#{catalog.filter.brand.all}">Все цвета</option>
+                    <option th:each="c : ${colors}" th:value="${c}" th:text="${c}" th:selected="${selectedColor != null && selectedColor == c}"></option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label th:text="#{catalog.filter.available}">Наличие</label>
+                <select name="available" onchange="this.form.submit()">
+                    <option value="" th:selected="${available == null}" th:text="#{catalog.filter.brand.all}">Все</option>
+                    <option value="true" th:selected="${available != null && available}" th:text="#{product.in.stock}">В наличии</option>
+                    <option value="false" th:selected="${available != null && !available}" th:text="#{product.out.of.stock}">Нет в наличии</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn" th:text="#{catalog.filter.apply}">Применить</button>
+                <a href="/catalog" class="btn btn-secondary" th:text="#{catalog.filter.reset}">Сбросить</a>
+            </div>
+        </form>
+    </aside>
+
+    <!-- Main content -->
+    <div class="catalog-main">
+        <h1 class="page-title" th:text="#{catalog.title}">Каталог товаров</h1>
+
+        <form method="get" action="/catalog" class="search-bar">
+            <input type="text" name="q" th:value="${query}" th:placeholder="#{catalog.search}">
+            <button type="submit" class="btn" th:text="#{catalog.search.btn}">Найти</button>
+        </form>
+
+        <div th:if="${category}">
+            <p th:text="#{catalog.filter.category} + ': ' + ${category.name}">Категория: <strong th:text="${category.name}"></strong></p>
+            <a href="/catalog" class="btn" th:text="#{catalog.filter.category.all}">Все категории</a>
+        </div>
+        <p th:if="${query}" class="search-query" th:text="|#{catalog.search} ${query}|">Результаты поиска: </p>
+
+        <!-- Sort bar -->
+        <div class="sort-bar" th:if="${not #lists.isEmpty(products)}">
+            <span class="sort-label" th:text="|#{catalog.sort}:|">Сортировка:</span>
+            <a th:href="@{/catalog(categoryId=${selectedCategoryId}, q=${query}, priceMin=${priceMin}, priceMax=${priceMax}, brand=${selectedBrand}, available=${available}, material=${selectedMaterial}, color=${selectedColor}, sort='name', dir='asc')}"
+               th:classappend="${sort == 'name' ? 'active' : ''}" th:text="#{catalog.sort.name.asc}">Название</a>
+            <a th:href="@{/catalog(categoryId=${selectedCategoryId}, q=${query}, priceMin=${priceMin}, priceMax=${priceMax}, brand=${selectedBrand}, available=${available}, material=${selectedMaterial}, color=${selectedColor}, sort='price', dir='asc')}"
+               th:classappend="${sort == 'price' && dir == 'asc' ? 'active' : ''}" th:text="#{catalog.sort.price.asc}">Цена ↑</a>
+            <a th:href="@{/catalog(categoryId=${selectedCategoryId}, q=${query}, priceMin=${priceMin}, priceMax=${priceMax}, brand=${selectedBrand}, available=${available}, material=${selectedMaterial}, color=${selectedColor}, sort='price', dir='desc')}"
+               th:classappend="${sort == 'price' && dir == 'desc' ? 'active' : ''}" th:text="#{catalog.sort.price.desc}">Цена ↓</a>
+            <span class="item-count" th:text="|#{catalog.found} ${totalItems}|">Найдено: </span>
+        </div>
+
+        <div class="product-grid" th:if="${not #lists.isEmpty(products)}" id="productGrid" th:attr="data-page=${currentPage},data-total=${totalPages}">
+            <div class="product-card" th:each="p : ${products}">
+                <div th:if="${p.imageUrl}" class="product-image">
+                    <img th:src="${p.imageUrl}" th:alt="${p.name}" loading="lazy"/>
+                </div>
+                <h3 th:text="${p.name}">Товар</h3>
+                <div class="brand" th:text="${p.brand}">Бренд</div>
+                <div class="price" th:text="|${p.price} ₽|">Цена</div>
+                <span class="stock" th:classappend="${p.stockQuantity > 0 ? '' : 'out-of-stock'}"
+                      th:text="${p.stockQuantity > 0} ? #{product.in.stock} : #{product.out.of.stock}">
+                </span>
+                <div class="card-actions">
+                    <button class="btn btn-sm" th:data-id="${p.id}" onclick="quickView(this)" title="Быстрый просмотр">👁</button>
+                    <a th:href="@{/product/{id}(id=${p.id})}" class="btn" th:text="#{catalog.details}">Подробнее</a>
+                    <form sec:authorize="isAuthenticated()" method="post" th:action="@{/wishlist/toggle/{id}(id=${p.id})}">
+                        <button type="submit" class="btn btn-wishlist">♥</button>
+                    </form>
+                    <button class="btn btn-sm btn-compare" th:data-id="${p.id}" onclick="toggleCompare(this)">⊕</button>
+                </div>
+            </div>
+        </div>
+        <p th:unless="${not #lists.isEmpty(products)}" th:text="#{catalog.no.results}">Товаров пока нет.</p>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${totalPages > 1}">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/catalog(categoryId=${selectedCategoryId}, q=${query}, priceMin=${priceMin}, priceMax=${priceMax}, brand=${selectedBrand}, available=${available}, material=${selectedMaterial}, color=${selectedColor}, sort=${sort}, dir=${dir}, page=${currentPage - 1})}"
+               class="page-link" th:text="#{catalog.pagination.prev}">← Назад</a>
+            <span class="page-info" th:text="|#{catalog.page} ${currentPage + 1} / ${totalPages}|"></span>
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/catalog(categoryId=${selectedCategoryId}, q=${query}, priceMin=${priceMin}, priceMax=${priceMax}, brand=${selectedBrand}, available=${available}, material=${selectedMaterial}, color=${selectedColor}, sort=${sort}, dir=${dir}, page=${currentPage + 1})}"
+               class="page-link" th:text="#{catalog.pagination.next}">Вперёд →</a>
+        </div>
+        <div id="scrollSentinel" th:if="${totalPages > 1}" style="height:1px;"></div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

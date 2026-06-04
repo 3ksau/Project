@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{wishlist.title}">Избранное — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<div class="container">
+    <h1 class="page-title" th:text="#{wishlist.title}">Избранное</h1>
+
+    <div class="product-grid" th:if="${not #lists.isEmpty(items)}">
+        <div class="product-card" th:each="p : ${items}">
+            <div th:if="${p.imageUrl}" class="product-image">
+                <img th:src="${p.imageUrl}" th:alt="${p.name}" loading="lazy"/>
+            </div>
+            <h3 th:text="${p.name}">Товар</h3>
+            <div class="brand" th:text="${p.brand}">Бренд</div>
+            <div class="price" th:text="|${p.price} ₽|">Цена</div>
+            <div class="card-actions">
+                <a th:href="@{/product/{id}(id=${p.id})}" class="btn" th:text="#{catalog.details}">Подробнее</a>
+                <form method="post" th:action="@{/wishlist/toggle/{id}(id=${p.id})}">
+                    <button type="submit" class="btn btn-secondary" th:text="#{wishlist.remove}">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:unless="${not #lists.isEmpty(items)}" class="empty-state">
+        <p th:text="#{wishlist.empty}">Список избранного пуст.</p>
+        <a href="/catalog" class="btn">Перейти в каталог</a>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{login.title}">Вход — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="#{login.title}">Вход</span>
+    </nav>
+    <div class="auth-form">
+        <h2 th:text="#{login.title}">Вход</h2>
+        <div class="error" th:if="${param.error}" th:text="#{login.error}">Неверный email или пароль</div>
+        <div class="success" th:if="${param.logout}" th:text="#{login.logout}">Вы вышли из системы</div>
+        <div class="success" th:if="${param.reset}" th:text="#{login.reset}">Пароль сброшен</div>
+        <div class="success" th:if="${param.registered}" th:text="#{register.success}">Регистрация прошла успешно! Войдите в систему.</div>
+        <form method="post" th:action="@{/login}">
+            <input type="email" name="username" th:placeholder="#{login.email}" required>
+            <input type="password" name="password" th:placeholder="#{login.password}" required>
+            <button type="submit" class="btn" th:text="#{login.btn}">Войти</button>
+        </form>
+        <p><a href="/forgot-password" th:text="#{forgot.title}">Забыли пароль?</a></p>
+        <p><a href="/register" th:text="#{login.register.link}">Нет аккаунта? Зарегистрироваться</a></p>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

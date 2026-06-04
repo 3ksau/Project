@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{site.title}">Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<div class="container">
+    <h1 class="page-title" th:text="#{index.welcome}">Добро пожаловать!</h1>
+    <p th:text="#{index.description}">Каталог сантехники по лучшим ценам.</p>
+
+    <div sec:authorize="isAuthenticated()" th:if="${favoriteProducts != null and not #lists.isEmpty(favoriteProducts)}">
+        <h2>⭐ Ваши любимые бренды</h2>
+        <div class="product-grid">
+            <div class="product-card" th:each="p : ${favoriteProducts}">
+                <div th:if="${p.imageUrl}" class="product-card-img">
+                    <img th:src="${p.imageUrl}" th:alt="${p.name}"/>
+                </div>
+                <div class="product-card-body">
+                    <div class="brand" th:text="${p.brand}">Бренд</div>
+                    <h3 th:text="${p.name}">Товар</h3>
+                    <div class="price" th:text="|${p.price} ₽|">Цена</div>
+                    <div class="card-actions">
+                        <a th:href="@{/product/{id}(id=${p.id})}" class="btn" th:text="#{catalog.details}">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 th:text="#{index.categories}">Категории</h2>
+    <div class="category-grid" th:if="${not #lists.isEmpty(categories)}">
+        <div class="category-card" th:each="cat : ${categories}">
+            <h3 th:text="${cat.name}">Название</h3>
+            <p th:text="${cat.description}">Описание</p>
+            <a th:href="@{/catalog(categoryId=${cat.id})}" class="btn" th:text="#{index.browse}">Смотреть</a>
+        </div>
+    </div>
+    <p th:unless="${not #lists.isEmpty(categories)}" th:text="#{index.no.categories}">Категорий пока нет.</p>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

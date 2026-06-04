@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Оформление заказа — Магазин сантехники</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <a href="/cart" th:text="#{cart.title}">Корзина</a>
+        <span class="sep">›</span>
+        <span class="current">Оформление заказа</span>
+    </nav>
+    <h1 class="page-title">Оформление заказа</h1>
+
+    <div class="checkout-layout">
+        <div class="checkout-items">
+            <h3>Ваш заказ</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Цена</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <td th:text="${item.product.name}">Товар</td>
+                        <td th:text="${item.quantity}">1</td>
+                        <td th:text="|${item.price} ₽|">Цена</td>
+                        <td th:text="|${#numbers.formatDecimal(item.price * item.quantity, 1, 2)} ₽|">Сумма</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">Итого:</td>
+                        <td th:text="|${total} ₽|"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="checkout-payment">
+            <h3>Выберите способ оплаты</h3>
+            <form method="post" action="/checkout">
+                <div class="payment-method selected">
+                    <input type="radio" name="method" value="yookassa" checked id="payCard">
+                    <label for="payCard">
+                        <strong>Банковская карта</strong><br>
+                        <span class="text-muted">Visa, Mastercard, МИР</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-lg btn-block">Оплатить <span th:text="|${total} ₽|"></span></button>
+            </form>
+            <p class="text-muted mt-1" style="font-size: 0.8rem;">
+                После нажатия вы будете перенаправлены на страницу оплаты.
+            </p>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

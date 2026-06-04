@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{admin.categories}">Админ — Категории</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <h1 class="page-title" th:text="#{admin.category.manage}">Управление категориями</h1>
+    <a href="/admin/categories/new" class="btn mb-1" th:text="#{admin.category.new}">+ Новая категория</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th th:text="#{admin.product.name}">Название</th>
+                <th>Slug</th>
+                <th th:text="#{admin.actions}">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="cat : ${categories}">
+                <td class="text-center" th:text="${cat.id}">1</td>
+                <td th:text="${cat.name}">Название</td>
+                <td th:text="${cat.slug}">slug</td>
+                <td class="text-center">
+                    <a th:href="@{/admin/categories/{id}/edit(id=${cat.id})}" class="btn btn-sm" th:text="#{admin.edit}">Ред.</a>
+                    <form method="post" th:action="@{/admin/categories/{id}/delete(id=${cat.id})}" class="inline-form" onsubmit="return confirm('Удалить?')">
+                        <button type="submit" class="btn btn-sm btn-wishlist" th:text="#{admin.delete}">Уд.</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

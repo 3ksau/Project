@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:if="${category.id}" th:text="#{admin.category.edit}">Редактировать категорию</title>
+    <title th:unless="${category.id}" th:text="#{admin.category.new}">Новая категория</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <a href="/admin/categories" class="btn mb-1" th:text="#{admin.cancel}">← Назад</a>
+    <div class="form-card">
+        <h2 th:if="${category.id}" th:text="|#{admin.category.edit}: ${category.name}|">Редактировать</h2>
+        <h2 th:unless="${category.id}" th:text="#{admin.category.new}">Новая категория</h2>
+
+        <form method="post" th:action="@{/admin/categories/save}" th:object="${category}">
+            <input type="hidden" name="id" th:value="*{id}">
+
+            <div class="form-group">
+                <label th:text="#{admin.product.name}">Название</label>
+                <input type="text" name="name" th:value="*{name}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Slug</label>
+                <input type="text" name="slug" th:value="*{slug}">
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{admin.product.description}">Описание</label>
+                <textarea name="description" rows="3" th:text="*{description}"></textarea>
+            </div>
+
+            <button type="submit" class="btn" th:text="#{admin.save}">Сохранить</button>
+        </form>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
