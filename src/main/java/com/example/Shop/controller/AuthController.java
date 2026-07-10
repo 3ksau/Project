@@ -4,19 +4,21 @@ import com.example.Shop.dto.RegisterRequest;
 import com.example.Shop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping
 @RequiredArgsConstructor
 public class AuthController {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final UserService userService;
 
@@ -31,17 +33,20 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid RegisterRequest request, BindingResult result, Model model) {
+    public String register(@Valid RegisterRequest request, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("error", "Проверьте правильность заполнения полей");
-            return "register";
+            redirectAttributes.addFlashAttribute("error", "Проверьте правильность заполнения полей");
+            return "redirect:/register";
         }
         try {
             userService.register(request);
-            return "redirect:/login?toast=" + URLEncoder.encode("Регистрация прошла успешно! Войдите в систему.", StandardCharsets.UTF_8) + "&toastType=success";
+            redirectAttributes.addFlashAttribute("toast", "Регистрация прошла успешно! Войдите в систему.");
+            redirectAttributes.addFlashAttribute("toastType", "success");
+            return "redirect:/login";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-            return "register";
+            log.warn("Register failed: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/register";
         }
     }
 }

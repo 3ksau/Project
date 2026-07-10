@@ -95,21 +95,6 @@ public class PageController {
         return "catalog";
     }
 
-    @GetMapping("/compare")
-    public String compare(@RequestParam(required = false) String ids, Model model) {
-        if (ids != null && !ids.isBlank()) {
-            var idList = java.util.Arrays.stream(ids.split(","))
-                    .filter(s -> !s.isBlank())
-                    .map(Long::parseLong)
-                    .toList();
-            List<ProductResponseDTO> products = productService.findAll().stream()
-                    .filter(p -> idList.contains(p.getId()))
-                    .toList();
-            model.addAttribute("products", products);
-        }
-        return "compare";
-    }
-
     @GetMapping("/product/{id}")
     public String product(@PathVariable Long id, Model model) {
         model.addAttribute("product", productService.findById(id));
@@ -126,7 +111,7 @@ public class PageController {
         var user = userService.findByEmail(auth.getName());
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
-            var dir = java.nio.file.Path.of("uploads/reviews");
+            var dir = java.nio.file.Paths.get(System.getProperty("user.dir"), "uploads", "reviews");
             try {
                 java.nio.file.Files.createDirectories(dir);
                 String filename = System.currentTimeMillis() + "_" + image.getOriginalFilename();

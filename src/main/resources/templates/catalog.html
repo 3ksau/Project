@@ -24,8 +24,6 @@
             <input type="hidden" name="q" th:value="${query}"/>
             <input type="hidden" name="sort" th:value="${sort}"/>
             <input type="hidden" name="dir" th:value="${dir}"/>
-            <input type="hidden" name="material" th:value="${selectedMaterial}"/>
-            <input type="hidden" name="color" th:value="${selectedColor}"/>
 
             <div class="filter-group">
                 <label th:text="#{catalog.filter.category}">Категория</label>
@@ -133,7 +131,7 @@
         <div class="product-grid" th:if="${not #lists.isEmpty(products)}" id="productGrid" th:attr="data-page=${currentPage},data-total=${totalPages}">
             <div class="product-card" th:each="p : ${products}">
                 <div th:if="${p.imageUrl}" class="product-image">
-                    <img th:src="${p.imageUrl}" th:alt="${p.name}" loading="lazy"/>
+                    <img th:src="${p.imageUrl}" th:alt="${p.name}"/>
                 </div>
                 <h3 th:text="${p.name}">Товар</h3>
                 <div class="brand" th:text="${p.brand}">Бренд</div>
@@ -142,12 +140,12 @@
                       th:text="${p.stockQuantity > 0} ? #{product.in.stock} : #{product.out.of.stock}">
                 </span>
                 <div class="card-actions">
-                    <button class="btn btn-sm" th:data-id="${p.id}" onclick="quickView(this)" title="Быстрый просмотр">👁</button>
                     <a th:href="@{/product/{id}(id=${p.id})}" class="btn" th:text="#{catalog.details}">Подробнее</a>
-                    <form sec:authorize="isAuthenticated()" method="post" th:action="@{/wishlist/toggle/{id}(id=${p.id})}">
-                        <button type="submit" class="btn btn-wishlist">♥</button>
+                    <form method="post" th:action="@{/cart/add}" class="inline-block">
+                        <input type="hidden" name="productId" th:value="${p.id}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn" th:text="#{catalog.add.to.cart}">В корзину</button>
                     </form>
-                    <button class="btn btn-sm btn-compare" th:data-id="${p.id}" onclick="toggleCompare(this)">⊕</button>
                 </div>
             </div>
         </div>

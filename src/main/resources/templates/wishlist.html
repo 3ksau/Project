@@ -11,7 +11,7 @@
 <div class="container">
     <h1 class="page-title" th:text="#{wishlist.title}">Избранное</h1>
 
-    <div class="product-grid" th:if="${not #lists.isEmpty(items)}">
+    <div class="product-grid wishlist-grid" th:if="${not #lists.isEmpty(items)}">
         <div class="product-card" th:each="p : ${items}">
             <div th:if="${p.imageUrl}" class="product-image">
                 <img th:src="${p.imageUrl}" th:alt="${p.name}" loading="lazy"/>

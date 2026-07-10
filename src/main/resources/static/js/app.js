@@ -87,44 +87,6 @@ function fetchSuggestions(query, dropdown, input) {
   xhr.send();
 }
 
-/* ── Compare bar ── */
-function initCompareBar() {
-  var bar = document.createElement('div');
-  bar.id = 'compareBar';
-  bar.className = 'compare-bar';
-  bar.innerHTML = '<span class="compare-bar-count">0</span> <span>в сравнении</span> <a href="/compare" class="btn btn-sm">Сравнить</a>';
-  document.body.appendChild(bar);
-  document.addEventListener('compareUpdate', updateCompareBar);
-  updateCompareBar();
-}
-
-function updateCompareBar() {
-  var ids = (localStorage.getItem('compareIds') || '').split(',').filter(Boolean);
-  var bar = document.getElementById('compareBar');
-  if (!bar) return;
-  bar.querySelector('.compare-bar-count').textContent = ids.length;
-  bar.classList.toggle('has-items', ids.length > 0);
-}
-
-window.toggleCompare = function(btn) {
-  var id = btn.getAttribute('data-id');
-  var ids = (localStorage.getItem('compareIds') || '').split(',').filter(Boolean);
-  var idx = ids.indexOf(id);
-  if (idx > -1) { ids.splice(idx, 1); btn.classList.remove('active'); }
-  else { if (ids.length >= 4) { alert('Можно сравнить не более 4 товаров'); return; }
-    ids.push(id); btn.classList.add('active');
-  }
-  localStorage.setItem('compareIds', ids.join(','));
-  document.dispatchEvent(new Event('compareUpdate'));
-};
-
-function initCompareButtons() {
-  var compareIds = (localStorage.getItem('compareIds') || '').split(',').filter(Boolean);
-  document.querySelectorAll('.btn-compare').forEach(function(btn) {
-    if (compareIds.indexOf(btn.getAttribute('data-id')) > -1) btn.classList.add('active');
-  });
-}
-
 /* ── Infinite scroll ── */
 function initInfiniteScroll() {
   var sentinel = document.getElementById('scrollSentinel');
@@ -236,21 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-/* Image loaded handler for skeleton */
-function initImageSkeleton() {
-  document.querySelectorAll('.product-image img[loading="lazy"]').forEach(function(img) {
-    if (img.complete) { img.setAttribute('complete', ''); }
-    else { img.addEventListener('load', function() { img.setAttribute('complete', ''); }); }
-  });
-}
-
 /* Init */
 document.addEventListener('DOMContentLoaded', function() {
   initAutocomplete();
   initThemeToggle();
-  initCompareBar();
-  initCompareButtons();
-  initImageSkeleton();
   initInfiniteScroll();
 });
 

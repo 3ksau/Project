@@ -28,4 +28,8 @@ public class CategoryRequestDTO {
     @Size(max = 500)
     @Schema(description = "Category description", example = "Kitchen faucets, sinks and accessories")
     private String description;
+
+    @Size(max = 500)
+    @Schema(description = "Category image URL", example = "/uploads/categories/image.jpg")
+    private String imageUrl;
 }

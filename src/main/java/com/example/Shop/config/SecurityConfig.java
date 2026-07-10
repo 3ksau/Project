@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**", "/api/categories/**").hasRole("ADMIN")
                 .requestMatchers("/api/payment/callback").permitAll()
                 .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/", "/catalog", "/product/**", "/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
+                .requestMatchers("/", "/catalog", "/product/**", "/css/**", "/js/**", "/images/**", "/fonts/**", "/uploads/**").permitAll()
                 .requestMatchers("/login", "/register", "/forgot-password", "/reset-password").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")

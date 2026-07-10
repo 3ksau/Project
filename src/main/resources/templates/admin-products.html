@@ -9,8 +9,18 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 <div class="container">
     <h1 class="page-title" th:text="#{admin.product.manage}">Управление товарами</h1>
-    <a href="/admin/products/new" class="btn mb-1" th:text="#{admin.product.new}">+ Новый товар</a>
 
+    <nav class="admin-nav">
+        <a href="/admin/products" class="btn btn-sm btn-active">Товары</a>
+        <a href="/admin/orders" class="btn btn-sm">Заказы</a>
+        <a href="/admin/categories" class="btn btn-sm">Категории</a>
+    </nav>
+
+    <div style="margin-top: 1.5rem;">
+        <a href="/admin/products/new" class="btn" th:text="#{admin.product.new}">+ Добавить товар</a>
+    </div>
+
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>

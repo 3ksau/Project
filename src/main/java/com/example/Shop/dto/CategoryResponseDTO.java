@@ -24,6 +24,9 @@ public class CategoryResponseDTO {
     @Schema(description = "Category description", example = "Kitchen faucets, sinks and accessories")
     private String description;
 
+    @Schema(description = "Category image URL", example = "/uploads/categories/image.jpg")
+    private String imageUrl;
+
     @Schema(description = "Creation timestamp", example = "2026-01-15T10:30:00")
     private LocalDateTime createdAt;
 }

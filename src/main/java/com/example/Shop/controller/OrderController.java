@@ -39,6 +39,13 @@ public class OrderController {
         return "order-detail";
     }
 
+    @GetMapping("/orders/tracking")
+    public String orderTracking(Authentication auth, Model model) {
+        var user = userService.findByEmail(auth.getName());
+        model.addAttribute("orders", orderService.getUserOrders(user));
+        return "orders-tracking";
+    }
+
     @GetMapping("/admin/orders")
     public String adminOrders(Model model) {
         model.addAttribute("orders", orderService.getAllOrders());

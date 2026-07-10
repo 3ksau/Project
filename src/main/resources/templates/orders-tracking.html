@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{tracking.title}">Отслеживание заказов</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .tracking-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .tracking-step:last-child { border-bottom: none; }
+        .tracking-step .step-icon {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0;
+        }
+        .tracking-step .step-icon.done { background: #4CAF50; color: #fff; }
+        .tracking-step .step-icon.current { background: #FF9800; color: #fff; }
+        .tracking-step .step-icon.pending { background: #e0e0e0; color: #999; }
+        .tracking-step .step-icon.cancelled { background: #f44336; color: #fff; }
+        .tracking-step .step-info { flex: 1; }
+        .tracking-step .step-info .step-label { font-weight: 600; margin: 0; }
+        .tracking-step .step-info .step-date { font-size: 0.85rem; color: #777; margin: 0; }
+        .tracking-card h3 { margin-top: 0; }
+        .tracking-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem; }
+        .order-status-badge {
+            display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px;
+            font-size: 0.85rem; font-weight: 600;
+        }
+        .order-status-badge.NEW { background: #E3F2FD; color: #1565C0; }
+        .order-status-badge.PROCESSING { background: #FFF3E0; color: #E65100; }
+        .order-status-badge.SHIPPED { background: #F3E5F5; color: #7B1FA2; }
+        .order-status-badge.DELIVERED { background: #E8F5E9; color: #2E7D32; }
+        .order-status-badge.CANCELLED { background: #FFEBEE; color: #C62828; }
+        .order-header-link { text-decoration: none; color: inherit; }
+        .order-header-link:hover h3 { color: #1565C0; }
+    </style>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<div class="container">
+    <nav class="breadcrumbs">
+        <a href="/" th:text="#{nav.home}">Главная</a>
+        <span class="sep">›</span>
+        <a href="/profile" th:text="#{nav.profile}">Кабинет</a>
+        <span class="sep">›</span>
+        <span class="current" th:text="#{tracking.title}">Отслеживание заказа</span>
+    </nav>
+    <h1 class="page-title" th:text="#{tracking.title}">Отслеживание заказа</h1>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+        <p th:text="#{orders.empty}">У вас ещё нет заказов.</p>
+        <a href="/catalog" class="btn">Перейти в каталог</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(orders)}" class="tracking-list" style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div class="tracking-card" th:each="order : ${orders}">
+            <a th:href="@{/orders/{id}(id=${order.id})}" class="order-header-link">
+                <h3 th:text="|#{orders.number} #{order.id}|">Заказ №<span th:text="${order.id}"></span></h3>
+            </a>
+            <p style="margin:0.25rem 0 0.75rem;">
+                <span class="order-status-badge" th:classappend="|${order.status}|" th:text="#{__${'order.status.' + order.status}__}">Статус</span>
+                <span style="margin-left:1rem;color:#777;font-size:0.9rem;" th:text="${order.createdAt}">Дата</span>
+            </p>
+            <p style="margin:0 0 0.75rem;font-weight:600;" th:text="|#{orders.total}: #{order.totalAmount} ₽|">Сумма: 0 ₽</p>
+
+            <div class="tracking-steps">
+                <div class="tracking-step">
+                    <div class="step-icon done">✓</div>
+                    <div class="step-info">
+                        <p class="step-label" th:text="#{tracking.step.placed}">Заказ оформлен</p>
+                        <p class="step-date" th:text="${order.createdAt}">Дата</p>
+                    </div>
+                </div>
+                <div class="tracking-step">
+                    <div th:class="${order.status.name() == 'CANCELLED'} ? 'step-icon cancelled' : (${order.status.ordinal() >= 1} ? 'step-icon done' : 'step-icon pending')">
+                        <span th:text="${order.status.name() == 'CANCELLED'} ? '✕' : (${order.status.ordinal() >= 1} ? '✓' : '○')">○</span>
+                    </div>
+                    <div class="step-info">
+                        <p class="step-label" th:text="#{tracking.step.processing}">Обработка</p>
+                        <p class="step-date" th:if="${order.status.ordinal() >= 1}" th:text="#{tracking.in.progress}">В процессе</p>
+                        <p class="step-date" th:if="${order.status.ordinal() < 1 and order.status.name() != 'CANCELLED'}" th:text="#{tracking.pending}">Ожидание</p>
+                        <p class="step-date" th:if="${order.status.name() == 'CANCELLED'}" th:text="#{tracking.cancelled}">Отменён</p>
+                    </div>
+                </div>
+                <div class="tracking-step" th:unless="${order.status.name() == 'CANCELLED'}">
+                    <div th:class="${order.status.ordinal() >= 2} ? 'step-icon done' : 'step-icon pending'">
+                        <span th:text="${order.status.ordinal() >= 2} ? '✓' : '○'">○</span>
+                    </div>
+                    <div class="step-info">
+                        <p class="step-label" th:text="#{tracking.step.shipped}">Отправлен</p>
+                        <p class="step-date" th:if="${order.status.ordinal() >= 2}" th:text="#{tracking.in.progress}">В пути</p>
+                        <p class="step-date" th:if="${order.status.ordinal() < 2}" th:text="#{tracking.pending}">Ожидание</p>
+                    </div>
+                </div>
+                <div class="tracking-step" th:unless="${order.status.name() == 'CANCELLED'}">
+                    <div th:class="${order.status.ordinal() >= 3} ? 'step-icon done' : 'step-icon pending'">
+                        <span th:text="${order.status.ordinal() >= 3} ? '✓' : '○'">○</span>
+                    </div>
+                    <div class="step-info">
+                        <p class="step-label" th:text="#{tracking.step.delivered}">Доставлен</p>
+                        <p class="step-date" th:if="${order.status.ordinal() >= 3}" th:text="#{tracking.completed}">Завершён</p>
+                        <p class="step-date" th:if="${order.status.ordinal() < 3}" th:text="#{tracking.pending}">Ожидание</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

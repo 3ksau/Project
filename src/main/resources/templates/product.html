@@ -37,7 +37,7 @@
             <div class="meta" th:if="${product.reviewCount > 0}">
                 <span th:text="|#{product.reviews.rating}:|"></span>
                 <span th:each="i : ${#numbers.sequence(1, 5)}">
-                    <span th:style="${i <= product.averageRating ? 'color:gold;' : 'color:#ddd;'}" th:text="★"></span>
+                    <span th:style="${i <= product.averageRating ? 'color:gold;' : 'color:#ddd;'}">★</span>
                 </span>
                 (<span th:text="${product.averageRating}"></span>, <span th:text="${product.reviewCount}"></span>)
             </div>
@@ -102,7 +102,7 @@
                 <strong th:text="${rev.user.fullName} != null ? ${rev.user.fullName} : ${rev.user.email}">Имя</strong>
                 <span>
                     <span th:each="i : ${#numbers.sequence(1, 5)}">
-                        <span th:classappend="${i <= rev.rating} ? 'star' : 'star-empty'" th:text="★"></span>
+                        <span th:classappend="${i <= rev.rating} ? 'star' : 'star-empty'">★</span>
                     </span>
                 </span>
             </div>

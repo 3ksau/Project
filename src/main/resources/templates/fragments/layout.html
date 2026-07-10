@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script th:src="@{/js/app.js}" defer></script>
     <title th:text="${title}">Shop</title>
@@ -23,28 +23,15 @@
                 <a href="/register" th:text="#{nav.register}">Регистрация</a>
             </span>
             <span sec:authorize="isAuthenticated()">
-                <a href="/profile" th:text="#{nav.profile}">Кабинет</a>
                 <a href="/wishlist" th:text="#{nav.wishlist}">Избранное</a>
-                <a href="/compare" th:text="#{nav.compare}">Сравнение</a>
                 <a href="/cart" th:text="#{nav.cart}">Корзина</a>
-                <a href="/orders" th:text="#{nav.orders}">Заказы</a>
                 <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="nav-admin" th:text="#{nav.admin}">Админка</a>
-                <span sec:authentication="name"></span>
-                <a href="/logout" th:text="#{nav.logout}">Выйти</a>
+                <a href="/profile" th:text="#{nav.profile}">Кабинет</a>
             </span>
-            <a href="?lang=en">EN</a> | <a href="?lang=ru">RU</a>
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
         </nav>
     </div>
 </header>
-<script>
-    (function() {
-        var saved = localStorage.getItem('theme');
-        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-    })();
-</script>
+
 
     <div class="toast-container" id="toastContainer"></div>
 

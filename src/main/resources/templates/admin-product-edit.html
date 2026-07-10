@@ -14,8 +14,8 @@
         <h2 th:if="${product.id}" th:text="|#{admin.product.edit}: ${product.name}|">Редактировать</h2>
         <h2 th:unless="${product.id}" th:text="#{admin.product.new}">Новый товар</h2>
 
-        <form method="post" th:action="@{/admin/products/save}" th:object="${product}">
-            <input type="hidden" name="id" th:value="*{id}">
+        <form method="post" th:action="@{/admin/products/save}" th:object="${product}" enctype="multipart/form-data">
+            <input type="hidden" name="id" th:if="*{id != null}" th:value="*{id}">
 
             <div class="form-group">
                 <label th:text="#{admin.product.name}">Название</label>
@@ -48,8 +48,10 @@
             </div>
 
             <div class="form-group">
-                <label th:text="#{admin.product.image}">Изображение (URL)</label>
-                <input type="text" name="imageUrl" th:value="*{imageUrl}">
+                <label th:text="#{admin.product.image}">Изображение</label>
+                <input type="file" name="imageFile" accept="image/*" class="form-control">
+                <small style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-top: 0.25rem;" th:if="*{imageUrl}" th:text="|Текущее: *{imageUrl}|"></small>
+                <input type="hidden" name="imageUrl" th:value="*{imageUrl}">
             </div>
 
             <div class="form-group">

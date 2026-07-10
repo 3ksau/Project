@@ -11,5 +11,6 @@
     <include file="db/changelog/changeset/013-add-payment-fields.xml"/>
     <include file="db/changelog/changeset/014-add-user-address.xml"/>
     <include file="db/changelog/changeset/015-add-favorite-brands.xml"/>
+    <include file="db/changelog/changeset/016-add-category-image.xml"/>
 
 </databaseChangeLog>

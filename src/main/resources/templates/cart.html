@@ -24,6 +24,7 @@
         <table>
             <thead>
                 <tr>
+                    <th th:text="#{cart.image}">Изображение</th>
                     <th th:text="#{cart.product}">Товар</th>
                     <th th:text="#{cart.price}">Цена</th>
                     <th th:text="#{cart.quantity}">Кол-во</th>
@@ -33,6 +34,10 @@
             </thead>
             <tbody>
                 <tr th:each="item : ${items}">
+                    <td class="text-center">
+                        <img th:if="${item.product.imageUrl}" th:src="${item.product.imageUrl}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+                        <span th:unless="${item.product.imageUrl}" class="text-muted" style="font-size:0.75rem;">—</span>
+                    </td>
                     <td th:text="${item.product.name}">Товар</td>
                     <td class="text-center" th:text="|${item.price} ₽|">Цена</td>
                     <td class="text-center">

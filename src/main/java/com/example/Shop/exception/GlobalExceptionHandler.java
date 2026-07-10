@@ -1,5 +1,7 @@
 package com.example.Shop.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +17,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ModelAndView handleNotFound(ResourceNotFoundException ex) {
@@ -26,6 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ModelAndView handleGeneral(Exception ex) {
+        log.error("Unhandled exception", ex);
         ModelAndView mav = new ModelAndView("error/500");
         mav.addObject("message", "Произошла внутренняя ошибка сервера");
         return mav;
@@ -51,6 +56,7 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(Exception.class)
         @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
         public ResponseEntity<Map<String, Object>> handleRestGeneral(Exception ex) {
+            log.error("Unhandled REST exception", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Internal server error", "status", 500, "timestamp", LocalDateTime.now().toString()));
         }

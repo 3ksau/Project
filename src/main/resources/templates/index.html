@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <title th:text="#{site.title}">Магазин сантехники</title>
@@ -9,31 +10,63 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 
 <div class="container">
-    <h1 class="page-title" th:text="#{index.welcome}">Добро пожаловать!</h1>
-    <p th:text="#{index.description}">Каталог сантехники по лучшим ценам.</p>
+    <div class="hero">
+        <h1 th:text="#{index.welcome}">Премиальная сантехника</h1>
+        <p th:text="#{index.description}">Каталог сантехники по лучшим ценам. Качество, проверенное временем.</p>
+        <a href="/catalog" class="btn" th:text="#{index.browse.catalog}">Перейти в каталог</a>
+    </div>
 
-    <div sec:authorize="isAuthenticated()" th:if="${favoriteProducts != null and not #lists.isEmpty(favoriteProducts)}">
-        <h2>⭐ Ваши любимые бренды</h2>
-        <div class="product-grid">
-            <div class="product-card" th:each="p : ${favoriteProducts}">
-                <div th:if="${p.imageUrl}" class="product-card-img">
-                    <img th:src="${p.imageUrl}" th:alt="${p.name}"/>
-                </div>
-                <div class="product-card-body">
-                    <div class="brand" th:text="${p.brand}">Бренд</div>
-                    <h3 th:text="${p.name}">Товар</h3>
-                    <div class="price" th:text="|${p.price} ₽|">Цена</div>
-                    <div class="card-actions">
-                        <a th:href="@{/product/{id}(id=${p.id})}" class="btn" th:text="#{catalog.details}">Подробнее</a>
+    <div class="about-section">
+        <h2 th:text="#{about.title}">О нашем магазине</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p th:text="#{about.p1}">Мы — команда профессионалов с многолетним опытом в сфере сантехники и отопления. Предлагаем только сертифицированную продукцию ведущих мировых брендов.</p>
+                <p th:text="#{about.p2}">В нашем ассортименте — смесители, раковины, унитазы, ванны, душевые кабины и всё необходимое для ванной комнаты. Мы гарантируем качество, конкурентные цены и быструю доставку.</p>
+                <p th:text="#{about.p3}">Наши консультанты помогут подобрать оптимальное решение для вашего интерьера и бюджета.</p>
+            </div>
+            <div class="about-map">
+                <div class="map-container" id="mapContainer">
+                    <div class="map-placeholder">
+                        <p>🏪 г. Самара, ул. Хасановская, 43А</p>
+                        <p>📞 +7 (846) 123-45-67</p>
+                        <p>✉️ shop@example.com</p>
+                        <p>🕐 Пн-Пт: 9:00–20:00, Сб-Вс: 10:00–18:00</p>
                     </div>
+                    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=50.128%2C53.145%2C50.168%2C53.175&amp;layer=mapnik&amp;marker=53.160%2C50.148"
+                            width="100%" height="300" style="border:0;border-radius:8px;" allowfullscreen loading="lazy"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <h2 th:text="#{index.categories}">Категории</h2>
+    <div sec:authorize="isAuthenticated()" th:if="${favoriteProducts != null and not #lists.isEmpty(favoriteProducts)}">
+        <div class="section-heading">
+            <h2 th:text="#{index.favorite.brands}">Ваши любимые бренды</h2>
+        </div>
+        <div class="product-grid">
+            <div class="product-card" th:each="p : ${favoriteProducts}">
+                <div th:if="${p.imageUrl}" class="product-image">
+                    <img th:src="${p.imageUrl}" th:alt="${p.name}"/>
+                </div>
+                <div class="brand" th:text="${p.brand}">Бренд</div>
+                <h3 th:text="${p.name}">Товар</h3>
+                <div class="price" th:text="|${p.price} ₽|">Цена</div>
+                <div class="card-actions">
+                    <a th:href="@{/product/{id}(id=${p.id})}" class="btn" th:text="#{catalog.details}">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        <hr class="divider">
+    </div>
+
+    <div class="section-heading">
+        <h2 th:text="#{index.categories}">Категории</h2>
+    </div>
     <div class="category-grid" th:if="${not #lists.isEmpty(categories)}">
         <div class="category-card" th:each="cat : ${categories}">
+            <div th:if="${cat.imageUrl}" class="category-image">
+                <img th:src="${cat.imageUrl}" th:alt="${cat.name}"/>
+            </div>
             <h3 th:text="${cat.name}">Название</h3>
             <p th:text="${cat.description}">Описание</p>
             <a th:href="@{/catalog(categoryId=${cat.id})}" class="btn" th:text="#{index.browse}">Смотреть</a>

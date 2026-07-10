@@ -10,6 +10,13 @@
 <div class="container">
     <h1 class="page-title" th:text="#{admin.order.manage}">Управление заказами</h1>
 
+    <nav class="admin-nav">
+        <a href="/admin/products" class="btn btn-sm">Товары</a>
+        <a href="/admin/orders" class="btn btn-sm btn-active">Заказы</a>
+        <a href="/admin/categories" class="btn btn-sm">Категории</a>
+    </nav>
+
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>

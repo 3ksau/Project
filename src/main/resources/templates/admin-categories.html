@@ -9,12 +9,23 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 <div class="container">
     <h1 class="page-title" th:text="#{admin.category.manage}">Управление категориями</h1>
-    <a href="/admin/categories/new" class="btn mb-1" th:text="#{admin.category.new}">+ Новая категория</a>
 
+    <nav class="admin-nav">
+        <a href="/admin/products" class="btn btn-sm">Товары</a>
+        <a href="/admin/orders" class="btn btn-sm">Заказы</a>
+        <a href="/admin/categories" class="btn btn-sm btn-active">Категории</a>
+    </nav>
+
+    <div style="margin-top: 1.5rem;">
+        <a href="/admin/categories/new" class="btn" th:text="#{admin.category.new}">+ Новая категория</a>
+    </div>
+
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
                 <th>ID</th>
+                <th th:text="#{admin.product.image}">Изображение</th>
                 <th th:text="#{admin.product.name}">Название</th>
                 <th>Slug</th>
                 <th th:text="#{admin.actions}">Действия</th>
@@ -23,6 +34,10 @@
         <tbody>
             <tr th:each="cat : ${categories}">
                 <td class="text-center" th:text="${cat.id}">1</td>
+                <td class="text-center">
+                    <img th:if="${cat.imageUrl}" th:src="${cat.imageUrl}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+                    <span th:unless="${cat.imageUrl}" class="text-muted" style="font-size:0.75rem;">—</span>
+                </td>
                 <td th:text="${cat.name}">Название</td>
                 <td th:text="${cat.slug}">slug</td>
                 <td class="text-center">
@@ -34,6 +49,7 @@
             </tr>
         </tbody>
     </table>
+    </div>
 </div>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>

@@ -48,7 +48,7 @@
 
         <div class="checkout-payment">
             <h3>Выберите способ оплаты</h3>
-            <form method="post" action="/checkout">
+            <form method="post" th:action="@{/checkout}">
                 <div class="payment-method selected">
                     <input type="radio" name="method" value="yookassa" checked id="payCard">
                     <label for="payCard">
